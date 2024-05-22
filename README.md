@@ -7,6 +7,7 @@ A simple non-scientific calculator programmed in python using the tkinter graphi
 - Compact Intuitive Interface
 - Keyboard Support
 - MOD & DIV Support
+- Input Sanitisation
 - Syntax Error Detection
 
 ## Credits

@@ -4,6 +4,7 @@
 # Programmed By: Stephen Adams
 
 # Imports
+import re
 from tkinter import *
 from functools import partial
 
@@ -12,33 +13,29 @@ def button_press(value):
     contains = str(display.cget('text'))
     if contains == 'Syntax Error':
         contains = ''
-    if value == '=':
+    if value in ['=', '\r']:
         try:
-            display.config(text=eval(contains.replace('×','*').replace('÷','/').replace('MOD','%').replace('DIV','//')))
+            result = eval(contains.replace('×', '*').replace('÷', '/').replace('MOD', '%').replace('DIV', '//'))
+            display.config(text=result)
         except:
             display.config(text='Syntax Error')
-    elif value == '⌫' or value == '':
-        sub = contains[len(contains)-3:len(contains)]
-        if sub != 'MOD' and sub != 'DIV':
-            display.config(text=contains[0:len(contains)-1])
+    elif value in ['⌫', '\x08']:
+        if contains.endswith('MOD') or contains.endswith('DIV'):
+            display.config(text=contains[:-3])
         else:
-            display.config(text=contains[0:len(contains)-3])
+            display.config(text=contains[:-1])
     elif value == 'AC':
         display.config(text='')
     else:
-        if len(contains) != 21:
+        if len(contains) != 20 and re.fullmatch('[0-9,+,×,*,\\-,÷,/,(,),.,MOD,%,DIV,//]*',value):
             display.config(text=contains + value)
-
-# Detect Key Presses & Pass To Function
-def key_press(event):
-    button_press(event.char)
 
 # Tkinter Window Configuration
 window = Tk()
 window.geometry('240x300')
 window.title('Calculator')
 window.resizable(False,False)
-window.bind('<Key>', key_press)
+window.bind('<Key>', lambda event:button_press(event.char))
 window.iconphoto(True,PhotoImage(file='assets/favicon.png'))
 
 # User Interface Element Setup
