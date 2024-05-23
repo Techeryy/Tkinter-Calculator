@@ -15,4 +15,4 @@ A simple non-scientific calculator programmed in python using the tkinter graphi
 ## Credits
 <a href="https://github.com/Techeryy">Programmed By Stephen Adams - Techeryy</a>
 
-<a href="https://www.flaticon.com/free-icons/iphone">Application Favicon By Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/calculator">Application Favicon By Freepik - Flaticon</a>
