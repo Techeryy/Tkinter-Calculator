@@ -1,15 +1,13 @@
 # A non-scientific calculator programmed in python
 # using the tkinter graphics library.
-# Requirements: re, time, threading, ctypes, tkinter, functools
+# Requirements: re, os, time, threading, ctypes, tkinter, functools
 # Programmed By: Stephen Adams
 
 # Imports
-import re
-import time
-import threading
 import ctypes as ct
 from tkinter import *
 from functools import partial
+import re, os, time, threading
 
 # Colour Definitions
 font, grey, light_grey, dark_grey = '#FFFFFF', '#3C3C3C', '#8D8D8D', '#252526'
@@ -19,7 +17,12 @@ pointer = 0
 
 # Fetch Display Contents
 def getDisplay():
-    return str(display.cget('text')).replace('Syntax Error','').replace('|','')
+    return str(display.cget('text')).replace('|','')
+
+# Edit Pointer Location
+def editPointerLocation(location):
+    global pointer
+    pointer = location
 
 # Blinking Cursor
 def cursor():
@@ -29,8 +32,8 @@ def cursor():
             index = len(content) - pointer
             display.config(text=content[:index] + '|' + content[index:])
             time.sleep(0.6)
-            display.config(text=getDisplay().replace('|',''))
-            time.sleep(0.6)
+            display.config(text=getDisplay())
+        time.sleep(0.6)
 
 # Create Themed Button (Defaults: Height=2, Width=4, Position=(0,0))
 def createButton(text=None,command=None,h=2,w=4,x=0, y=0):
@@ -45,22 +48,28 @@ def evaluate(expression):
 
 # Key & Button Handling
 def triggerAction(value):
-    content = getDisplay()
+    content = getDisplay().replace('Syntax Error','')
     index = len(content) - pointer
     if value in ['=', '\r']:
         display.config(text=evaluate(content))
+        editPointerLocation(0)
     elif value in ['⌫', '\x08']:
-        display.config(text=content[:index-(3 if content[index-3:index] in ['MOD','DIV'] else 1)] + content[index:])
+        display.config(text=(content[:index-(3 if content[index-3:index] in ['MOD','DIV'] else 1)] + content[index:]) if index != 0 else content)
     elif value == 'AC':
         display.config(text='')
     elif value == 'Off':
         window.destroy()
+        os._exit(1)
     elif len(content) <= 20 and re.fullmatch('[0-9,+,\\-,×,*,÷,/,(,),^,.,×10,MOD,%,DIV,//]*',value):
         display.config(text=content[:index] + value + content[index:])
 
 def navigate(action):
-    global pointer
-    pointer += (1 if action == 'Left' and pointer < len(getDisplay()) else (-1 if pointer > 0 and action == 'Right' else 0))
+    content = getDisplay().replace('Syntax Error','')
+    index = len(content) - pointer
+    if action == 'Left' and pointer < len(content):
+        editPointerLocation(pointer+3 if content[index-3:index] in ['MOD','DIV'] else pointer+1)
+    elif action == 'Right' and pointer > 0:
+        editPointerLocation(pointer -3 if content[index:index+3] in ['MOD','DIV'] else pointer-1)
 
 # Tkinter Window Configuration
 window = Tk()
