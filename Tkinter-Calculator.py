@@ -41,9 +41,9 @@ def createButton(text=None,command=None,h=2,w=4,x=0, y=0):
 
 # Expression Evaluation (Square Root Support)
 def evaluate(expression):
-    pattern = r'√([0-9]+)|√\((.+)\)'
+    pattern = r'√([0-9,.]+)|√\((.+)\)'
     try:
-        if re.findall(pattern, expression):
+        while re.findall(pattern, expression):
             expression = re.sub(pattern, lambda x: str(math.sqrt(eval(evaluate(x.group(1) if x.group(1) else x.group(2))))), expression)
         return str(eval(expression))
     except: return 'Syntax Error'
@@ -100,3 +100,4 @@ for row in range(len(buttons)):
 # Starting Processes
 threading.Thread(target=cursor).start()
 window.mainloop()
+os._exit(1)
